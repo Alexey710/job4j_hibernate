@@ -13,7 +13,8 @@ public class Trademark {
     private int id;
     private String name;
 
-    @OneToMany(mappedBy = "trademark", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "trademark_id")
     private List<Model> models = new ArrayList<>();
 
     public static Trademark of(String name) {

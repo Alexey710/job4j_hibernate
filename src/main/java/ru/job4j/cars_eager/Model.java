@@ -11,8 +11,7 @@ public class Model {
     private int id;
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "trademark_id")
+    @ManyToOne (fetch = FetchType.EAGER)
     private Trademark trademark;
 
     public static Model of(String name) {
@@ -56,6 +55,6 @@ public class Model {
 
     @Override
     public String toString() {
-        return "Model{" + "id=" + id + ", name='" + name + '\'' + ", trademark=" + trademark + '}';
+        return "Model{" + "id=" + id + ", name='" + name + '\'' + '}';
     }
 }
