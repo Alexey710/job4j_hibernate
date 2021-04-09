@@ -18,5 +18,7 @@
         <property name="hibernate.hbm2ddl.auto">update</property>
 
         <mapping class="ru.job4j.candidates.Candidate" />
+        <mapping class="ru.job4j.candidates.Vacancy" />
+        <mapping class="ru.job4j.candidates.Base" />
     </session-factory>
 </hibernate-configuration>

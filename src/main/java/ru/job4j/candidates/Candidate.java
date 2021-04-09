@@ -13,11 +13,15 @@ public class Candidate {
     private String experience;
     private int salary;
 
-    public static Candidate of(String name, String experience, int salary) {
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)/*(cascade = CascadeType.ALL, fetch = FetchType.LAZY)*/
+    private Base base;
+
+    public static Candidate of(String name, String experience, int salary, Base base) {
         Candidate candidate = new Candidate();
         candidate.name = name;
         candidate.experience = experience;
         candidate.salary = salary;
+        candidate.base = base;
         return candidate;
     }
 
@@ -49,6 +53,14 @@ public class Candidate {
         this.salary = salary;
     }
 
+    public Base getBase() {
+        return base;
+    }
+
+    public void setBase(Base base) {
+        this.base = base;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -73,6 +85,7 @@ public class Candidate {
                 + ", name='" + name + '\''
                 + ", experience='" + experience + '\''
                 + ", salary=" + salary
+                + ", base=" + base
                 + '}';
     }
 }

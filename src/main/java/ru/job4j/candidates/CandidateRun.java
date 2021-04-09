@@ -47,9 +47,16 @@ public class CandidateRun implements AutoCloseable {
                 session -> {
                     Query query = session.createQuery("from Candidate");
                     List<Candidate> list = query.list();
-                    list.forEach(o -> System.out.println(o));
                     return list;
                 }
+        );
+    }
+
+    public List<Candidate> findAllByFetch() {
+        return this.tx(
+                session -> session.createQuery(
+                            "select distinct c from Candidate c join fetch c.base b join fetch b.vacancies"
+                    ).list()
         );
     }
 
@@ -59,7 +66,6 @@ public class CandidateRun implements AutoCloseable {
                     Query query = session.createQuery("from Candidate c where c.id = :idCan");
                     query.setParameter("idCan", id);
                     Candidate can = (Candidate) query.uniqueResult();
-                    System.out.println(can);
                     return can;
                 }
         );
@@ -71,7 +77,6 @@ public class CandidateRun implements AutoCloseable {
                     Query query = session.createQuery("from Candidate c where c.name = :nameCan");
                     query.setParameter("nameCan", name);
                     Candidate can = (Candidate) query.uniqueResult();
-                    System.out.println(can);
                     return can;
                 }
         );
@@ -113,16 +118,30 @@ public class CandidateRun implements AutoCloseable {
 
     public static void main(String[] args) {
         CandidateRun run = new CandidateRun();
-        /*Candidate can1 = Candidate.of("Иван", "продвинутый", 150000);
-        Candidate can2 = Candidate.of("Степан", "средний", 140000);
-        Candidate can3 = Candidate.of("Юрий", "начальный", 50000);
+        /*
+        Base base = Base.of();
+        base.setVacancies(
+        List.of(Vacancy.of("программист"), Vacancy.of("повар"), Vacancy.of("таксист")));
+        Candidate can1 = Candidate.of("Иван", "продвинутый", 150000, base);
+        Candidate can2 = Candidate.of("Степан", "средний", 140000, base);
+        Candidate can3 = Candidate.of("Юрий", "начальный", 50000, base);
         run.add(can1);
         run.add(can2);
-        run.add(can3);*/
-        run.findAll();
-        run.findById(1);
+        run.add(can3);
+
+        List<Candidate> candidates = run.findAll();
+        for (Candidate can : candidates) {
+            System.out.println(can);
+        } // it gives LazyInitializationException
+        */
+        List<Candidate> candidatesFetch = run.findAllByFetch();
+        for (Candidate canFetch : candidatesFetch) {
+            System.out.println(canFetch);
+        }
+        /*run.findById(1);
         run.findByName("Степан");
         run.updateById(3, "Челубей", "отсутствует", 50000);
-        run.deleteById(2);
+        run.deleteById(2);*/
+
     }
 }
