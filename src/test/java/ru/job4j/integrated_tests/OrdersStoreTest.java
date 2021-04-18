@@ -1,7 +1,9 @@
 package ru.job4j.integrated_tests;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -17,10 +19,10 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.*;
 
 public class OrdersStoreTest {
-    private BasicDataSource pool = new BasicDataSource();
+    private static BasicDataSource pool = new BasicDataSource();
 
-    @Before
-    public void setUp() throws SQLException {
+    @BeforeClass
+    public static void setUp() throws SQLException {
         pool.setDriverClassName("org.hsqldb.jdbcDriver");
         pool.setUrl("jdbc:hsqldb:mem:tests;sql.syntax_pgs=true");
         pool.setUsername("sa");
@@ -37,52 +39,34 @@ public class OrdersStoreTest {
         pool.getConnection().prepareStatement(builder.toString()).executeUpdate();
     }
 
-    @Test
-    public void whenSaveOrderAndFindAllOneRowWithDescription() {
-
+    @Before
+    public void add() {
         OrdersStore store = new OrdersStore(pool);
         store.save(Order.of("name1", "description1"));
+    }
 
+    @Test
+    public void whenSaveOrderAndFindAllOneRowWithDescription() {
+        OrdersStore store = new OrdersStore(pool);
         List<Order> all = (List<Order>) store.findAll();
-
-        assertThat(all.size(), is(1));
-        assertThat(all.get(0).getDescription(), is("description1"));
-        assertThat(all.get(0).getId(), is(1));
-
+        assertThat(store.findByName("name1").getDescription(), is("description1"));
     }
 
     @Test
     public void whenUpdateOrderById() {
         OrdersStore store = new OrdersStore(pool);
-        store.save(Order.of("name1", "description1"));
         store.update(1, Order.of("name2", "description2"));
-
-        List<Order> all = (List<Order>) store.findAll();
-
-        assertThat(all.size(), is(1));
-        assertThat(all.get(0).getDescription(), is("description2"));
-        assertThat(all.get(0).getId(), is(1));
-
+        assertThat(store.findById(1).getDescription(), is("description2"));
     }
 
     @Test
     public void whenFindOrderById() {
-        OrdersStore store = new OrdersStore(pool);
-        store.save(Order.of("name1", "description1"));
-        Order found = store.findById(1);
-
-        assertThat(found.getDescription(), is("description1"));
-
+        assertThat(new OrdersStore(pool).findById(1).getDescription(), is("description1"));
     }
 
     @Test
     public void whenFindOrderByName() {
-        OrdersStore store = new OrdersStore(pool);
-        store.save(Order.of("name1", "description1"));
-        Order found = store.findByName("name1");
-        assertThat(found.getDescription(), is("description1"));
-
+        assertThat(new OrdersStore(pool).findByName("name1").getDescription(), is("description1"));
     }
-
 
 }
